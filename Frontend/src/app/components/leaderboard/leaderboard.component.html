@@ -1,0 +1,123 @@
+<!-- Search Bar -->
+<div class="input-group mb-3 mt-3" style="max-width: 320px;">
+  <span class="input-group-text bg-white">
+    <i class="bi bi-search text-muted" style="font-size: 13px;"></i>
+  </span>
+  <input
+    type="text"
+    class="form-control border-start-0"
+    placeholder="Search anything..."
+    [(ngModel)]="globalSearch"
+    (ngModelChange)="applyFilters()"
+    style="font-size: 13px;"
+  />
+  <button
+    *ngIf="globalSearch"
+    class="btn btn-outline-secondary border-start-0"
+    (click)="globalSearch = ''; applyFilters()"
+    style="font-size: 12px;"
+  >
+    <i class="bi bi-x"></i>
+  </button>
+</div>
+
+<!-- Table -->
+<div class="w-100">
+  <table class="table table-hover table-bordered align-middle mb-0 w-100" style="table-layout: fixed; border-radius: 12px; overflow: hidden;">
+    <thead class="table-light text-muted">
+
+      <!-- Column Labels -->
+      <tr>
+        <th style="width: 6%;" class="text-center">#</th>
+        <th style="width: 24%;">Survey</th>
+        <th style="width: 18%;">Referrer</th>
+        <th style="width: 18%;">Referee</th>
+        <th style="width: 14%;">Status</th>
+        <th style="width: 20%;">Date</th>
+      </tr>
+
+      <!-- Column Filters -->
+      <tr class="filter-row">
+        <th></th>
+        <th>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Filter..."
+            [(ngModel)]="filters.surveyName"
+            (ngModelChange)="applyFilters()"
+          />
+        </th>
+        <th>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Filter..."
+            [(ngModel)]="filters.referrerName"
+            (ngModelChange)="applyFilters()"
+          />
+        </th>
+        <th>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Filter..."
+            [(ngModel)]="filters.refereeName"
+            (ngModelChange)="applyFilters()"
+          />
+        </th>
+        <th>
+          <select
+            class="form-select"
+            [(ngModel)]="filters.status"
+            (ngModelChange)="applyFilters()"
+          >
+            <option value="">All</option>
+            <option value="LEAD">LEAD</option>
+            <option value="FIT">FIT</option>
+            <option value="COMPLETED">COMPLETED</option>
+          </select>
+        </th>
+        <th>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="filters.date"
+            (ngModelChange)="applyFilters()"
+          />
+        </th>
+      </tr>
+
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of leaderboard; let i = index">
+        <td class="text-center text-muted fw-medium">{{ i + 1 }}</td>
+        <td class="fw-medium text-truncate">{{ item.surveyName }}</td>
+        <td class="text-truncate">{{ item.referrerName }}</td>
+        <td class="text-truncate">{{ item.refereeName }}</td>
+        <td>
+          <span
+            class="badge rounded-pill fw-semibold"
+            [ngClass]="{
+              'badge-lead': item.status === 'LEAD',
+              'badge-fit': item.status === 'FIT',
+              'badge-completed': item.status === 'COMPLETED'
+            }"
+          >
+            {{ item.status }}
+          </span>
+        </td>
+        <td class="text-muted small text-truncate">{{ item.date | date: 'medium' }}</td>
+      </tr>
+
+      <!-- Empty State -->
+      <tr *ngIf="leaderboard.length === 0">
+        <td colspan="6" class="text-center text-muted py-4">
+          <i class="bi bi-inbox fs-4 d-block mb-1"></i>
+          No results found
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

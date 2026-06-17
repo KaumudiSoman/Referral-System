@@ -1,0 +1,25 @@
+.table thead th {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .badge-lead      { background: #dbeafe; color: #1d4ed8; }
+  .badge-fit       { background: #fef3c7; color: #92400e; }
+  .badge-completed { background: #d1fae5; color: #065f46; }
+
+  .table > :not(caption) > * > * {
+    padding: 13px 20px;
+  }
+
+  .filter-row th {
+    padding: 8px 10px !important;
+    background: #f8f9fa;
+  }
+
+  .filter-row input,
+  .filter-row select {
+    font-size: 12px;
+    padding: 4px 8px;
+    height: 30px;
+  }

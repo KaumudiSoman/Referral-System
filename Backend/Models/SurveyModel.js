@@ -13,6 +13,9 @@ const surveySchema = new mongoose.Schema({
   },
   criteria: {
     type: String
+  },
+  city: {
+    type: String
   }
 }, {
   timestamps: true

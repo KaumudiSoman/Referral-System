@@ -9,11 +9,13 @@ const generateReferralCode = () => {
 
 exports.registerUser = async (req, res) => {
   try {
-    const { name, phone, city, referredBy, surveyId } = req.body;
+    const { name, email, phone, city } = req.body;
+    const { ref: referredBy, survey: surveyId } = req.query;
 
     // create new user
     const newUser = new User({
       name,
+      email,
       phone,
       city,
       referralCode: generateReferralCode(),

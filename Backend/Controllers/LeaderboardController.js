@@ -3,24 +3,10 @@ const mongoose = require('mongoose');
 
 exports.getLeaderboard = async (req, res) => {
   try {
-    const { status, surveyId, search } = req.query;
-
-    let matchStage = {};
-
-    // filter by status
-    if (status) {
-      matchStage.status = status;
-    }
-
-    // filter by survey
-    if (surveyId) {
-      matchStage.surveyId = new mongoose.Types.ObjectId(surveyId);
-    }
+    const { filters = {}, search } = req.body || {};
 
     const pipeline = [
-      { $match: matchStage },
-
-      // join referrer
+      // JOINS
       {
         $lookup: {
           from: 'users',
@@ -31,7 +17,6 @@ exports.getLeaderboard = async (req, res) => {
       },
       { $unwind: '$referrer' },
 
-      // join referee
       {
         $lookup: {
           from: 'users',
@@ -42,7 +27,6 @@ exports.getLeaderboard = async (req, res) => {
       },
       { $unwind: '$referee' },
 
-      // join survey
       {
         $lookup: {
           from: 'surveys',
@@ -54,34 +38,72 @@ exports.getLeaderboard = async (req, res) => {
       { $unwind: '$survey' }
     ];
 
-    // 🔍 SEARCH (by name or phone)
+    // 🧩 DYNAMIC FILTERS (MULTIPLE)
+    let andConditions = [];
+
+    if (filters.surveyName) {
+      andConditions.push({
+        'survey.name': { $regex: filters.surveyName, $options: 'i' }
+      });
+    }
+
+    if (filters.referrerName) {
+      andConditions.push({
+        'referrer.name': { $regex: filters.referrerName, $options: 'i' }
+      });
+    }
+
+    if (filters.refereeName) {
+      andConditions.push({
+        'referee.name': { $regex: filters.refereeName, $options: 'i' }
+      });
+    }
+
+    if (filters.status) {
+      andConditions.push({
+        status: filters.status
+      });
+    }
+
+    if (filters.date) {
+      const targetDate = new Date(filters.date);
+
+      andConditions.push({
+        $and: [
+          { 'survey.startDate': { $lte: targetDate } },
+          { 'survey.endDate': { $gte: targetDate } }
+        ]
+      });
+    }
+
+    if (andConditions.length > 0) {
+      pipeline.push({ $match: { $and: andConditions } });
+    }
+
+    // 🌍 GLOBAL SEARCH (optional)
     if (search) {
       pipeline.push({
         $match: {
           $or: [
+            { 'survey.name': { $regex: search, $options: 'i' } },
             { 'referrer.name': { $regex: search, $options: 'i' } },
             { 'referee.name': { $regex: search, $options: 'i' } },
-            { 'referrer.phone': { $regex: search, $options: 'i' } },
-            { 'referee.phone': { $regex: search, $options: 'i' } }
+            { status: { $regex: search, $options: 'i' } }
           ]
         }
       });
     }
 
-    // 🎯 FINAL OUTPUT FORMAT
+    // 🎯 OUTPUT
     pipeline.push({
       $project: {
         _id: 0,
-
         surveyId: '$survey._id',
         surveyName: '$survey.name',
-
         referrerId: '$referrer._id',
         referrerName: '$referrer.name',
-
         refereeId: '$referee._id',
         refereeName: '$referee.name',
-
         status: 1,
         date: '$createdAt'
       }
@@ -89,9 +111,15 @@ exports.getLeaderboard = async (req, res) => {
 
     const results = await Referral.aggregate(pipeline);
 
-    res.json(results);
+    res.status(200).json({
+      status: 'success',
+      data: results
+    });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      status: 'fail',
+      message: err.message
+    });
   }
 };

@@ -9,7 +9,13 @@ const referralSchema = new mongoose.Schema({
   refereeId: {
     type: mongoose.Schema.Types.ObjectId, // referred to
     ref: 'User',
-    required: true
+    required: true,
+    validate: {
+      validator: function (value) {
+        return value.toString() !== this.referrerId.toString(); // referrer != referee
+      },
+      message: 'Referrer and referee cannot be the same user'
+    }
   },
   surveyId: {
     type: mongoose.Schema.Types.ObjectId,
