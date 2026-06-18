@@ -11,13 +11,15 @@ import { AppComponent } from './app.component';
 import { UserComponent } from './components/user/user.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { NavComponent } from './components/nav/nav.component';
+import { RegisterComponent } from './components/register/register.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UserComponent,
     LeaderboardComponent,
-    NavComponent
+    NavComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

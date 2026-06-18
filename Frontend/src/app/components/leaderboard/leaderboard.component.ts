@@ -17,6 +17,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   globalSearch: string = '';
   filters = {
     surveyName: '',
+    referralId: '',
     referrerName: '',
     refereeName: '',
     status: '',
@@ -78,6 +79,15 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     }
 
     return params;
+  }
+
+  updateStatus(item: any, status: any) {
+    console.log(item);
+    console.log(item.referralId);
+    this.leaderBoardService.updateStatus(item.referralId, {status}).subscribe({
+      next: () => {this.toastrService.success('Status changed successfully')},
+      error: (err) => {this.toastrService.error(err.message)}
+    })
   }
 
   ngOnDestroy(): void {

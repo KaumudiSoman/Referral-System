@@ -1,0 +1,68 @@
+<div class="container pb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+
+      <!-- Survey Info -->
+      <div class="card border-0 bg-light rounded-3 p-3 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="text-muted small">Survey ID</span>
+          <span class="fw-semibold">{{ surveyId }}</span>
+        </div>
+        <hr class="my-2">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="text-muted small">Referred By</span>
+          <span class="fw-semibold">{{ referredBy }}</span>
+        </div>
+      </div>
+
+      <!-- Form Card -->
+      <form [formGroup]="userRegisterForm" (ngSubmit)="userRegisterForm.valid && register()" class="card border shadow-sm rounded-3 p-4">
+        <h5 class="fw-semibold mb-1">Register</h5>
+        <p class="text-muted small mb-4">Fill in your details to complete registration.</p>
+
+        <div class="mb-3">
+          <label class="form-label small fw-medium">Full Name</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="John Doe"
+            formControlName="name"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-medium">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            placeholder="john@example.com"
+            formControlName="email"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-medium">Phone</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="+91 98765 43210"
+            formControlName="phone"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-medium">City</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Mumbai"
+            formControlName="city"
+          />
+        </div>
+
+        <button class="btn btn-primary w-100 fw-medium" type="submit" [disabled]="!userRegisterForm.valid">Register</button>
+    </form>
+
+    </div>
+  </div>
+</div>

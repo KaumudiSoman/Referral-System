@@ -1,24 +1,28 @@
 <!-- Search Bar -->
-<div class="input-group mb-3 mt-3" style="max-width: 320px;">
-  <span class="input-group-text bg-white">
-    <i class="bi bi-search text-muted" style="font-size: 13px;"></i>
-  </span>
-  <input
-    type="text"
-    class="form-control border-start-0"
-    placeholder="Search anything..."
-    [(ngModel)]="globalSearch"
-    (ngModelChange)="applyFilters()"
-    style="font-size: 13px;"
-  />
-  <button
-    *ngIf="globalSearch"
-    class="btn btn-outline-secondary border-start-0"
-    (click)="globalSearch = ''; applyFilters()"
-    style="font-size: 12px;"
-  >
-    <i class="bi bi-x"></i>
-  </button>
+<div class="d-flex justify-content-center mt-3 mb-3">
+  <div class="input-group" style="max-width: 400px;">
+    <span class="input-group-text bg-white border-end-0">
+      <i class="fa fa-search text-muted" style="font-size: 13px;"></i>
+    </span>
+    <input
+      type="text"
+      class="form-control form-control-lg border-start-0 border-end-0"
+      placeholder="Search anything..."
+      [(ngModel)]="globalSearch"
+      (ngModelChange)="applyFilters()"
+      style="font-size: 15px;"
+    />
+    <button
+      *ngIf="globalSearch"
+      class="btn btn-outline-secondary border-start-0"
+      (click)="globalSearch = ''; applyFilters()"
+      style="font-size: 12px;"
+    >
+    Clear
+    </button>
+    <!-- placeholder to keep shape when clear button is absent -->
+    <span *ngIf="!globalSearch" class="input-group-text bg-white" style="width: 38px;"></span>
+  </div>
 </div>
 
 <!-- Table -->
@@ -27,9 +31,10 @@
     <thead class="table-light text-muted">
 
       <!-- Column Labels -->
-      <tr>
+      <tr class="table-primary">
         <th style="width: 6%;" class="text-center">#</th>
         <th style="width: 24%;">Survey</th>
+        <th style="width: 24%;">Referral Id</th>
         <th style="width: 18%;">Referrer</th>
         <th style="width: 18%;">Referee</th>
         <th style="width: 14%;">Status</th>
@@ -45,6 +50,15 @@
             class="form-control"
             placeholder="Filter..."
             [(ngModel)]="filters.surveyName"
+            (ngModelChange)="applyFilters()"
+          />
+        </th>
+        <th>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Filter..."
+            [(ngModel)]="filters.referralId"
             (ngModelChange)="applyFilters()"
           />
         </th>
@@ -94,19 +108,44 @@
       <tr *ngFor="let item of leaderboard; let i = index">
         <td class="text-center text-muted fw-medium">{{ i + 1 }}</td>
         <td class="fw-medium text-truncate">{{ item.surveyName }}</td>
+        <td class="fw-medium text-truncate">{{ item.referralId }}</td>
         <td class="text-truncate">{{ item.referrerName }}</td>
         <td class="text-truncate">{{ item.refereeName }}</td>
         <td>
-          <span
+        <div class="d-flex align-items-center gap-2">
+            <span
             class="badge rounded-pill fw-semibold"
             [ngClass]="{
-              'badge-lead': item.status === 'LEAD',
-              'badge-fit': item.status === 'FIT',
-              'badge-completed': item.status === 'COMPLETED'
+                'badge-lead': item.status === 'LEAD',
+                'badge-fit': item.status === 'FIT',
+                'badge-completed': item.status === 'COMPLETED'
             }"
-          >
+            >
             {{ item.status }}
-          </span>
+            </span>
+
+            <button
+            *ngIf="item.status === 'LEAD'"
+            class="btn btn-sm btn-outline-warning py-0 px-2"
+            style="font-size: 11px;"
+            (click)="updateStatus(item, 'FIT')"
+            [disabled]="item.updating"
+            >
+            <span *ngIf="!item.updating">→ FIT</span>
+            <span *ngIf="item.updating" class="spinner-border spinner-border-sm"></span>
+            </button>
+
+            <button
+            *ngIf="item.status === 'FIT'"
+            class="btn btn-sm btn-outline-success py-0 px-2"
+            style="font-size: 11px;"
+            (click)="updateStatus(item, 'COMPLETED')"
+            [disabled]="item.updating"
+            >
+            <span *ngIf="!item.updating">→ COMPLETED</span>
+            <span *ngIf="item.updating" class="spinner-border spinner-border-sm"></span>
+            </button>
+        </div>
         </td>
         <td class="text-muted small text-truncate">{{ item.date | date: 'medium' }}</td>
       </tr>
