@@ -6,7 +6,6 @@ exports.getLeaderboard = async (req, res) => {
     const { filters = {}, search } = req.body || {};
 
     const pipeline = [
-      // JOINS
       {
         $lookup: {
           from: 'users',
@@ -38,7 +37,7 @@ exports.getLeaderboard = async (req, res) => {
       { $unwind: '$survey' }
     ];
 
-    // 🧩 DYNAMIC FILTERS (MULTIPLE)
+    // Filters
     let andConditions = [];
 
     if (filters.surveyName) {
@@ -80,7 +79,7 @@ exports.getLeaderboard = async (req, res) => {
       pipeline.push({ $match: { $and: andConditions } });
     }
 
-    // 🌍 GLOBAL SEARCH (optional)
+    // Global Search
     if (search) {
       pipeline.push({
         $match: {
@@ -94,12 +93,12 @@ exports.getLeaderboard = async (req, res) => {
       });
     }
 
-    // 🎯 OUTPUT
     pipeline.push({
       $project: {
         _id: 0,
         surveyId: '$survey._id',
         surveyName: '$survey.name',
+        referralId: '$_id', 
         referrerId: '$referrer._id',
         referrerName: '$referrer.name',
         refereeId: '$referee._id',
