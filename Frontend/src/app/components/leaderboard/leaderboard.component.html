@@ -1,3 +1,50 @@
+<!-- Header -->
+<div class="d-flex justify-content-end mb-3">
+  <button class="btn btn-outline-primary me-5" (click)="exportToCsv()">
+    <i class="fa fa-download me-1"></i> Export CSV
+  </button>
+</div>
+
+<!-- Metrics -->
+<div class="row g-3 mx-5 mt-2 mb-4" *ngIf="metrics">
+  <div class="col">
+    <div class="card border-0 bg-light text-center py-3 px-2 rounded-3">
+      <p class="text-muted small mb-1">Total Users</p>
+      <h5 class="fw-semibold mb-0">{{ metrics.totalUsers }}</h5>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card border-0 bg-light text-center py-3 px-2 rounded-3">
+      <p class="text-muted small mb-1">Total Surveys</p>
+      <h5 class="fw-semibold mb-0">{{ metrics.totalSurveys }}</h5>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card border-0 bg-light text-center py-3 px-2 rounded-3">
+      <p class="text-muted small mb-1">Total Referrals</p>
+      <h5 class="fw-semibold mb-0">{{ metrics.totalReferrals }}</h5>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card border-0 text-center py-3 px-2 rounded-3" style="background: #dbeafe;">
+      <p class="small mb-1" style="color: #1d4ed8;">Lead</p>
+      <h5 class="fw-semibold mb-0" style="color: #1d4ed8;">{{ metrics.totalLead }}</h5>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card border-0 text-center py-3 px-2 rounded-3" style="background: #fef3c7;">
+      <p class="small mb-1" style="color: #92400e;">Fit</p>
+      <h5 class="fw-semibold mb-0" style="color: #92400e;">{{ metrics.totalFit }}</h5>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card border-0 text-center py-3 px-2 rounded-3" style="background: #d1fae5;">
+      <p class="small mb-1" style="color: #065f46;">Completed</p>
+      <h5 class="fw-semibold mb-0" style="color: #065f46;">{{ metrics.totalCompleted }}</h5>
+    </div>
+  </div>
+</div>
+
 <!-- Search Bar -->
 <div class="d-flex justify-content-center mt-3 mb-3">
   <div class="input-group" style="max-width: 400px;">
@@ -32,18 +79,29 @@
 
       <!-- Column Labels -->
       <tr class="table-primary">
-        <th style="width: 6%;" class="text-center">#</th>
-        <th style="width: 24%;">Survey</th>
-        <th style="width: 24%;">Referral Id</th>
-        <th style="width: 18%;">Referrer</th>
-        <th style="width: 18%;">Referee</th>
-        <th style="width: 14%;">Status</th>
-        <th style="width: 20%;">Date</th>
+        <th style="width: 5%;" class="text-center">#</th>
+        <th style="width: 22%;">Survey Id</th>
+        <th style="width: 10%;">Survey Name</th>
+        <th style="width: 22%;">Referral Id</th>
+        <th style="width: 22%;">Referrer Id</th>
+        <th style="width: 9%;">Referrer Name</th>
+        <th style="width: 22%;">Referee Id</th>
+        <th style="width: 9%;">Referee Name</th>
+        <th style="width: 15%;">Status</th>
+        <th style="width: 12%;">Date</th>
       </tr>
 
       <!-- Column Filters -->
       <tr class="filter-row">
         <th></th>
+        <th>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Filter..."
+            [(ngModel)]="filters.surveyId"
+            (ngModelChange)="applyFilters()"
+          />
         <th>
           <input
             type="text"
@@ -67,10 +125,26 @@
             type="text"
             class="form-control"
             placeholder="Filter..."
+            [(ngModel)]="filters.referrerId"
+            (ngModelChange)="applyFilters()"
+          />
+        <th>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Filter..."
             [(ngModel)]="filters.referrerName"
             (ngModelChange)="applyFilters()"
           />
         </th>
+        <th>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Filter..."
+            [(ngModel)]="filters.refereeId"
+            (ngModelChange)="applyFilters()"
+          />
         <th>
           <input
             type="text"
@@ -107,9 +181,12 @@
     <tbody>
       <tr *ngFor="let item of leaderboard; let i = index">
         <td class="text-center text-muted fw-medium">{{ i + 1 }}</td>
+        <td class="fw-medium text-truncate">{{ item.surveyId }}</td>
         <td class="fw-medium text-truncate">{{ item.surveyName }}</td>
         <td class="fw-medium text-truncate">{{ item.referralId }}</td>
+        <td class="text-truncate">{{ item.referrerId }}</td>
         <td class="text-truncate">{{ item.referrerName }}</td>
+        <td class="text-truncate">{{ item.refereeId }}</td>
         <td class="text-truncate">{{ item.refereeName }}</td>
         <td>
         <div class="d-flex align-items-center gap-2">
@@ -147,7 +224,7 @@
             </button>
         </div>
         </td>
-        <td class="text-muted small text-truncate">{{ item.date | date: 'medium' }}</td>
+        <td class="text-muted small text-truncate">{{ item.date | date: 'mediumDate' }}</td>
       </tr>
 
       <!-- Empty State -->

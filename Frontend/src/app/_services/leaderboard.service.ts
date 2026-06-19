@@ -18,4 +18,8 @@ export class LeaderboardService {
   updateStatus(referralId: any, body: any) {
     return this.http.put(APIResources.baseUrl + APIResources.referrals + `/${referralId}`, body);
   }
+
+  getMetrics() {
+    return this.http.get(APIResources.baseUrl + APIResources.leaderboard + APIResources.metrics);
+  }
 }

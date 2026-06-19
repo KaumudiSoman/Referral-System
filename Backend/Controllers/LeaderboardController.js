@@ -1,5 +1,7 @@
-const Referral = require('../Models/ReferralModel');
 const mongoose = require('mongoose');
+const Referral = require('../Models/ReferralModel');
+const User = require('../Models/UserModel');
+const Survey = require('../Models/SurveyModel');
 
 exports.getLeaderboard = async (req, res) => {
   try {
@@ -87,7 +89,16 @@ exports.getLeaderboard = async (req, res) => {
             { 'survey.name': { $regex: search, $options: 'i' } },
             { 'referrer.name': { $regex: search, $options: 'i' } },
             { 'referee.name': { $regex: search, $options: 'i' } },
-            { status: { $regex: search, $options: 'i' } }
+            { status: { $regex: search, $options: 'i' } },
+            {
+              $expr: {
+                $regexMatch: {
+                  input: { $toString: '$_id' },
+                  regex: search,
+                  options: 'i'
+                }
+              }
+            }
           ]
         }
       });
@@ -122,3 +133,40 @@ exports.getLeaderboard = async (req, res) => {
     });
   }
 };
+
+exports.getMetrics = async(req, res) => {
+  try {
+    const [
+      totalUsers,
+      totalSurveys,
+      totalReferrals,
+      totalLead,
+      totalFit,
+      totalCompleted
+    ] = await Promise.all([
+      User.countDocuments(),
+      Survey.countDocuments(),
+      Referral.countDocuments(),
+      Referral.countDocuments({ status: 'LEAD' }),
+      Referral.countDocuments({ status: 'FIT' }),
+      Referral.countDocuments({ status: 'COMPLETED' })
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        totalUsers,
+        totalSurveys,
+        totalReferrals,
+        totalLead,
+        totalFit,
+        totalCompleted
+      }
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'fail',
+      message: err.message
+    });
+  }
+}

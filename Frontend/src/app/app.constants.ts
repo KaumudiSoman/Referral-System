@@ -5,4 +5,5 @@ export const APIResources = {
     users: '/users',
     register: '/register',
     referrals: '/referrals',
+    metrics: '/metrics',
 }
